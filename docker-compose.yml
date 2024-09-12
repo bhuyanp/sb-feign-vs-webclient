@@ -1,0 +1,49 @@
+version: '3.3'
+
+  services:
+    discovery-server:
+      build: discovery-server
+      container_name: discovery-server
+      environment:
+        - SPRING_PROFILES_ACTIVE=docker
+      ports:
+        - "8761:8761"
+      expose:
+        - "8761"
+      restart: on-failure
+
+      api-gateway:
+        depends_on:
+          - discovery-server
+          - zipkin
+        build: api-gateway/
+        container_name: api-gateway
+        environment:
+          - SPRING_PROFILES_ACTIVE=docker
+        ports:
+          - "8080:8080"
+        expose:
+          - "8080"
+        restart: on-failure
+
+      customer-service:
+        container_name: customer-service
+        depends_on:
+          - mysql-customer
+          - api-gateway
+        build: customer-service/
+        environment:
+          - SPRING_PROFILES_ACTIVE=docker
+          - MYSQL_HOST=mysql-customer
+        restart: on-failure
+
+      product-service:
+        container_name: product-service
+        depends_on:
+          - mongo
+          - api-gateway
+        build: product-service/
+        environment:
+          - SPRING_PROFILES_ACTIVE=docker
+          - MONGO_HOST=mongo
+        restart: on-failure
