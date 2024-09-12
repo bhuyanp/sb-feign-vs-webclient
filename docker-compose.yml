@@ -1,49 +1,50 @@
-version: '3.3'
+version: '3.5'
+x-common-settings: &common-settings
+  restart: on-failure
+  environment:
+    - SPRING_PROFILES_ACTIVE=docker
 
-  services:
-    discovery-server:
-      build: discovery-server
-      container_name: discovery-server
-      environment:
-        - SPRING_PROFILES_ACTIVE=docker
-      ports:
-        - "8761:8761"
-      expose:
-        - "8761"
-      restart: on-failure
+services:
+  discovery-server:
+    build: discovery-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    <<: *common-settings
 
-      api-gateway:
-        depends_on:
-          - discovery-server
-          - zipkin
-        build: api-gateway/
-        container_name: api-gateway
-        environment:
-          - SPRING_PROFILES_ACTIVE=docker
-        ports:
-          - "8080:8080"
-        expose:
-          - "8080"
-        restart: on-failure
+  api-gateway:
+    depends_on:
+      - discovery-server
+    build: api-gateway/
+    container_name: api-gateway
+    ports:
+      - "80:80"
+    <<: *common-settings
 
-      customer-service:
-        container_name: customer-service
-        depends_on:
-          - mysql-customer
-          - api-gateway
-        build: customer-service/
-        environment:
-          - SPRING_PROFILES_ACTIVE=docker
-          - MYSQL_HOST=mysql-customer
-        restart: on-failure
 
-      product-service:
-        container_name: product-service
-        depends_on:
-          - mongo
-          - api-gateway
-        build: product-service/
-        environment:
-          - SPRING_PROFILES_ACTIVE=docker
-          - MONGO_HOST=mongo
-        restart: on-failure
+  product-service:
+    container_name: product-service
+    depends_on:
+      - discovery-server
+    build: product-service/
+    <<: *common-settings
+
+  web-client:
+    container_name: web-client
+    depends_on:
+      - product-service
+    build: web-client/
+    ports:
+      - "9000:9000"
+    <<: *common-settings
+
+  feign-client:
+    container_name: feign-client
+    depends_on:
+      - product-service
+    build: feign-client/
+    ports:
+      - "8000:8000"
+    <<: *common-settings
+
+
