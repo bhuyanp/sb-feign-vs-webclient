@@ -30,27 +30,34 @@ public class LoadTesterApplication {
         SpringApplication.run(LoadTesterApplication.class, args);
     }
 
-    private final int numberOfCalls = 200;
+    private final int numberOfCalls = 500;
 
     @Bean
     public CommandLineRunner commandLineRunner() {
         return args -> {
             try {
                 StopWatch sw = new StopWatch();
-                sw.start("WebClient");
                 var i = 0;
-                while (i < numberOfCalls) {
-                    fetchProducts("WebClient",8000);
-                    i++;
-                }
-                sw.stop();
+
+
                 sw.start("FeignClient");
                 i = 0;
                 while (i < numberOfCalls) {
-                    fetchProducts("FeignClient",9000);
+                    fetchProducts("FeignClient",8000);
                     i++;
                 }
                 sw.stop();
+
+
+                sw.start("WebClient");
+                i = 0;
+                while (i < numberOfCalls) {
+                    fetchProducts("WebClient",9000);
+                    i++;
+                }
+                sw.stop();
+
+
                 log.info(sw.prettyPrint());
             } catch (Exception e){
                 log.error("Error starting up the application.",e);

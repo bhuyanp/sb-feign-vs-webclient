@@ -12,7 +12,7 @@
     <artifactId>discovery-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>discovery-server</name>
-    <description>eureka-server</description>
+    <description>discovery-server</description>
     <url/>
     <licenses>
         <license/>
@@ -34,6 +34,10 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
 
         <dependency>

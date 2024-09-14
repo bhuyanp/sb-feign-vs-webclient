@@ -1,5 +1,6 @@
 package com.example.productservice;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 @EnableDiscoveryClient
+@Slf4j
 public class ProductServiceApplication {
 
     public static void main(String[] args) {
@@ -21,7 +23,7 @@ public class ProductServiceApplication {
     @Bean
     CommandLineRunner commandLineRunner(){
         return args -> {
-            System.out.println("DISCOVERY URL: "+discoveryServerUrl);
+            log.info("DISCOVERY URL: {}",discoveryServerUrl);
         };
     }
 }

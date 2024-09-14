@@ -1,47 +1,70 @@
-version: '3.5'
+version: "3.5"
 x-common-settings: &common-settings
   restart: on-failure
-  environment:
-    - SPRING_PROFILES_ACTIVE=docker
+
 
 services:
   discovery-server:
     build: discovery-server
     container_name: discovery-server
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
     ports:
       - "8761:8761"
+    expose:
+      - "8761"
+    healthcheck:
+      test: "curl --fail --silent localhost:8761/actuator/health | grep UP || exit 1"
+      interval: 2s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
     <<: *common-settings
-
-  api-gateway:
-    depends_on:
-      - discovery-server
-    build: api-gateway/
-    container_name: api-gateway
-    ports:
-      - "80:80"
-    <<: *common-settings
-
 
   product-service:
     container_name: product-service
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
     depends_on:
-      - discovery-server
+      discovery-server:
+        condition: service_healthy
     build: product-service/
     <<: *common-settings
 
+  api-gateway:
+    container_name: api-gateway
+    build: api-gateway/
+    depends_on:
+        discovery-server:
+          condition: service_healthy
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
+    ports:
+      - "9090:9090"
+    expose:
+      - "9090"
+    <<: *common-settings
+
+
   web-client:
     container_name: web-client
-    depends_on:
-      - product-service
     build: web-client/
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
     ports:
       - "9000:9000"
     <<: *common-settings
 
   feign-client:
     container_name: feign-client
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka/
     depends_on:
-      - product-service
+      discovery-server:
+        condition: service_healthy
     build: feign-client/
     ports:
       - "8000:8000"

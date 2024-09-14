@@ -2,5 +2,28 @@ spring:
     application:
         name: feign-client
 
+info:
+    app:
+    name: Feign Client
+    description: Feign Client
+    version: 1.0.0
+
 server:
     port: 8000
+    servlet:
+        context-path: /
+management:
+    server:
+        port: 8000
+    endpoints:
+        web:
+            base-path: /actuator
+            exposure:
+                include: "*"
+
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://localhost:8761/eureka/
+    instance:
+        instance-id: ${spring.application.name}:${server.port}

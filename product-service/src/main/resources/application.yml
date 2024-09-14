@@ -5,12 +5,17 @@ server:
     port: 0
 
 
-app:
-    eureka-server: localhost
+info:
+    app:
+    name: Product Service
+    description: Product Service
+    version: 1.0.0
+
+
 
 eureka:
     client:
         serviceUrl:
-            defaultZone: http://{app.eureka-server}:8761/eureka/
+            defaultZone: http://localhost:8761/eureka/
     instance:
         instance-id: ${spring.application.name}:${random.int(1000)}

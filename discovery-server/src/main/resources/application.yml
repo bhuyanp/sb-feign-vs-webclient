@@ -1,9 +1,25 @@
 spring:
     application:
-        name: service-registry
+        name: discovery-server
+
+info:
+    app:
+    name: Discovery Server
+    description: Discovery Server
+    version: 1.0.0
 
 server:
     port: 8761
+    servlet:
+        context-path: /
+management:
+    server:
+        port: 8761
+    endpoints:
+        web:
+            base-path: /actuator
+            exposure:
+                include: "*"
 
 eureka:
     instance:
