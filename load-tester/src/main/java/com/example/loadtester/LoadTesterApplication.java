@@ -30,7 +30,7 @@ public class LoadTesterApplication {
         SpringApplication.run(LoadTesterApplication.class, args);
     }
 
-    private final int numberOfCalls = 500;
+    private final int numberOfCalls = 1000;
 
     @Bean
     public CommandLineRunner commandLineRunner() {
